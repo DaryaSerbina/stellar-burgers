@@ -1,45 +1,59 @@
 import { FC, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
+import { useDispatch, useSelector } from '../../services/store';
+import { createOrder, closeOrderModal } from '../../slices/constructorSlice';
 
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-  const constructorItems = {
-    bun: {
-      price: 0
-    },
+  const dispatch = useDispatch();
+  const { constructorItems, orderRequest, orderModalData } = useSelector(
+    (state) => {
+      console.log(
+        'useSelector state.burgerConstructor:',
+        state.burgerConstructor
+      );
+      return state.burgerConstructor;
+    }
+  );
+
+  const safeConstructorItems = constructorItems ?? {
+    bun: null,
     ingredients: []
   };
 
-  const orderRequest = false;
-
-  const orderModalData = null;
-
   const onOrderClick = () => {
-    if (!constructorItems.bun || orderRequest) return;
+    if (!safeConstructorItems.bun || orderRequest) return;
+
+    const ingredientIds = [
+      safeConstructorItems.bun._id,
+      ...safeConstructorItems.ingredients.map((item) => item._id),
+      safeConstructorItems.bun._id
+    ];
+    dispatch(createOrder(ingredientIds));
   };
-  const closeOrderModal = () => {};
+
+  const handleCloseOrderModal = () => {
+    dispatch(closeOrderModal());
+  };
 
   const price = useMemo(
     () =>
-      (constructorItems.bun ? constructorItems.bun.price * 2 : 0) +
-      constructorItems.ingredients.reduce(
+      (safeConstructorItems.bun ? safeConstructorItems.bun.price * 2 : 0) +
+      safeConstructorItems.ingredients.reduce(
         (s: number, v: TConstructorIngredient) => s + v.price,
         0
       ),
-    [constructorItems]
+    [safeConstructorItems]
   );
-
-  return null;
 
   return (
     <BurgerConstructorUI
       price={price}
       orderRequest={orderRequest}
-      constructorItems={constructorItems}
+      constructorItems={safeConstructorItems}
       orderModalData={orderModalData}
       onOrderClick={onOrderClick}
-      closeOrderModal={closeOrderModal}
+      closeOrderModal={handleCloseOrderModal}
     />
   );
 };

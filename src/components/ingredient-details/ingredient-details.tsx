@@ -1,14 +1,40 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Preloader } from '../ui/preloader';
 import { IngredientDetailsUI } from '../ui/ingredient-details';
+import { useDispatch, useSelector } from '../../services/store';
+import {
+  fetchIngredientById,
+  clearIngredient
+} from '../../slices/ingredientDetailsSlice';
 
 export const IngredientDetails: FC = () => {
-  /** TODO: взять переменную из стора */
-  const ingredientData = null;
+  const dispatch = useDispatch();
+  const { id } = useParams<{ id: string }>();
+  const { ingredient, isLoading, error } = useSelector(
+    (state) => state.ingredientDetails
+  );
 
-  if (!ingredientData) {
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchIngredientById(id));
+    }
+    return () => {
+      dispatch(clearIngredient());
+    };
+  }, [dispatch, id]);
+
+  if (isLoading) {
     return <Preloader />;
   }
 
-  return <IngredientDetailsUI ingredientData={ingredientData} />;
+  if (error) {
+    return <div>Ошибка: {error}</div>;
+  }
+
+  if (!ingredient) {
+    return <div>Ингредиент не найден</div>;
+  }
+
+  return <IngredientDetailsUI ingredientData={ingredient} />;
 };
