@@ -64,6 +64,8 @@ export const getUserThunk = createAsyncThunk<
   { rejectValue: string }
 >('auth/getUser', async (_, { rejectWithValue }) => {
   if (!getCookie('accessToken')) {
+    localStorage.removeItem('refreshToken');
+    document.cookie = 'accessToken=; Max-Age=0; path=/;';
     return rejectWithValue('No access token');
   }
   try {
@@ -71,8 +73,12 @@ export const getUserThunk = createAsyncThunk<
     if (response.success) {
       return response.user;
     }
+    localStorage.removeItem('refreshToken');
+    document.cookie = 'accessToken=; Max-Age=0; path=/;';
     return rejectWithValue('Failed to get user');
   } catch (err) {
+    localStorage.removeItem('refreshToken');
+    document.cookie = 'accessToken=; Max-Age=0; path=/;';
     return rejectWithValue((err as Error).message || 'Get user failed');
   }
 });
@@ -188,8 +194,6 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.loading = false;
         state.error = action.payload ?? 'Unknown error';
-        localStorage.removeItem('refreshToken');
-        document.cookie = 'accessToken=; Max-Age=0; path=/;';
       })
 
       .addCase(updateUserThunk.pending, (state) => {

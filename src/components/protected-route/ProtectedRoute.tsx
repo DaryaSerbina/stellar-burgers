@@ -1,6 +1,6 @@
 import { FC, ReactElement } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { getCookie } from '../utils/cookie';
+import { getCookie } from '../../utils/cookie';
 
 interface ProtectedRouteProps {
   element: ReactElement;
@@ -11,7 +11,7 @@ export const ProtectedRoute: FC<ProtectedRouteProps> = ({ element }) => {
   const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to='/login' state={{ from: location }} replace />;
+    return <Navigate replace to='/login' state={{ from: location }} />;
   }
 
   return element;

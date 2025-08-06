@@ -46,12 +46,10 @@ export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
   if (!orderInfo) return null;
 
   return (
-    <Link to={`/feed/${order._id}`} state={{ background: location }}>
-      <OrderCardUI
-        orderInfo={orderInfo}
-        maxIngredients={maxIngredients}
-        locationState={{ background: location }}
-      />
-    </Link>
+    <OrderCardUI
+      orderInfo={orderInfo}
+      maxIngredients={maxIngredients}
+      locationState={{ background: location }}
+    />
   );
 });

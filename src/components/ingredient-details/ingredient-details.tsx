@@ -8,7 +8,13 @@ import {
   clearIngredient
 } from '../../slices/ingredientDetailsSlice';
 
-export const IngredientDetails: FC = () => {
+interface IngredientDetailsProps {
+  isModal?: boolean;
+}
+
+export const IngredientDetails: FC<IngredientDetailsProps> = ({
+  isModal = false
+}) => {
   const dispatch = useDispatch();
   const { id } = useParams<{ id: string }>();
   const { ingredient, isLoading, error } = useSelector(
@@ -36,5 +42,5 @@ export const IngredientDetails: FC = () => {
     return <div>Ингредиент не найден</div>;
   }
 
-  return <IngredientDetailsUI ingredientData={ingredient} />;
+  return <IngredientDetailsUI ingredientData={ingredient} isModal={isModal} />;
 };
