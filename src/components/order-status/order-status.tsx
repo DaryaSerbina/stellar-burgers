@@ -1,25 +1,19 @@
-import React, { FC } from 'react';
+import { FC, memo } from 'react';
 import { OrderStatusProps } from './type';
 import { OrderStatusUI } from '@ui';
 
-const statusText: { [key: string]: string } = {
-  pending: 'Готовится',
-  done: 'Выполнен',
-  created: 'Создан'
+interface StatusConfig {
+  text: string;
+  color: string;
+}
+
+const statusConfig: { [key in OrderStatusProps['status']]: StatusConfig } = {
+  pending: { text: 'Готовится', color: '#E52B1A' },
+  done: { text: 'Выполнен', color: '#00CCCC' },
+  created: { text: 'Создан', color: '#F2F2F3' }
 };
 
-export const OrderStatus: FC<OrderStatusProps> = ({ status }) => {
-  let textStyle = '';
-  switch (status) {
-    case 'pending':
-      textStyle = '#E52B1A';
-      break;
-    case 'done':
-      textStyle = '#00CCCC';
-      break;
-    default:
-      textStyle = '#F2F2F3';
-  }
-
-  return <OrderStatusUI textStyle={textStyle} text={statusText[textStyle]} />;
-};
+export const OrderStatus: FC<OrderStatusProps> = memo(({ status }) => {
+  const { text, color } = statusConfig[status] || statusConfig.created;
+  return <OrderStatusUI textStyle={color} text={text} />;
+});
