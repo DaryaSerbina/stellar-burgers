@@ -1,15 +1,19 @@
 import { useSelector } from '../../services/store';
-
 import styles from './constructor-page.module.css';
-
 import { BurgerIngredients } from '../../components';
 import { BurgerConstructor } from '../../components';
 import { Preloader } from '../../components/ui';
-import { FC } from 'react';
+import { FC, memo } from 'react';
 
-export const ConstructorPage: FC = () => {
-  /** TODO: взять переменную из стора */
-  const isIngredientsLoading = false;
+export const ConstructorPage: FC = memo(() => {
+  const isIngredientsLoading = useSelector(
+    (state) => state.ingredients.isLoading
+  );
+
+  console.log(
+    'ConstructorPage rendered, isIngredientsLoading:',
+    isIngredientsLoading
+  );
 
   return (
     <>
@@ -30,4 +34,4 @@ export const ConstructorPage: FC = () => {
       )}
     </>
   );
-};
+});
